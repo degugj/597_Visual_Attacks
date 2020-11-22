@@ -3,12 +3,13 @@ import numpy as np
 import statistics
 
 prev_frame = np.zeros((1080,1920,3), dtype = np.uint8)
+
 round0 = 1
+
 #put path to video below. might need to  reset datype based on video. check frame.dtype()
 cap = cv2.VideoCapture('Backend-Demo.mp4') 
 # ctr = 0
 maximumFrame = 0
-minCorr = 1000000
 sumArray = []
 correlationArray = []
 while(cap.isOpened()):
@@ -31,10 +32,7 @@ while(cap.isOpened()):
 	sumArray.append(frameSum)
 	if frameSum > maximumFrame:
 		maximumFrame = frameSum 
-	if	corr < minCorr:
-		minCorr = corr
 	correlationArray.append(corr)
-	mean = statistics.mean(sumArray)
 	color = cv2.cvtColor(frame, 0)
 	# cv2.imshow('frame diff ',diff)    
 	# cv2.imshow('frame',color)
@@ -42,11 +40,10 @@ while(cap.isOpened()):
 	# ctr+=1
 	if cv2.waitKey(1) & 0xFF == ord('q'):
 		break
-print("Maximum sum of difference between subsequent frames = ",maximumFrame)
 print("Minimum correlation = ", min(correlationArray))
 print("Maximum correlation = ", max(correlationArray))
 print("Correlation average = ", statistics.mean(correlationArray))
-print("Mean: ", mean)
+print("Mean of sum arrays: = ", statistics.mean(sumArray))
 
 #put check condition based on the specific video that we will run for a certain amount of time
 
