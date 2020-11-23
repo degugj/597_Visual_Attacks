@@ -1,10 +1,19 @@
 import time
+import sys
 import picamera
 import numpy as np
 import cv2
-
+from datetime import datetime
 import replay_attack
 
+isReplayAttack = False
+isSelectiveReplayAttack = False
+isForgedAttack = False
+isIFC_Verification = False
+isBlinkVerification = False
+if len(sys.argv)>0:
+    if sys.argv[0] == "replay":
+        isReplayAttack = True
 with picamera.PiCamera() as camera:
     resolution = (320, 240)
     camera.resolution = resolution
@@ -12,24 +21,27 @@ with picamera.PiCamera() as camera:
     video_feed = []
     video_true = []
     c = 0
-    while 1:
+    for c in range(1000):
         output = np.empty((240, 320, 3), dtype=np.uint8)  # 3D matrix of rgb values
         camera.capture(output, 'rgb', True)  # Find argument to make capture faster (at framerate)
         video_true.append(output)
         c+=1
         # Here is where we'd modify and inject the frame
-        output = replay_attack.replay_attack(100, output)
-        video_feed.append(output)
+        if isReplayAttack:
+            output = replay_attack.replay_attack(100, output)
+            video_feed.append(output)
         print(c)
-        if c == 1000:
-            break
-    print("Number of Frames Captured: ", len(video_feed))
+    print("Number of Frames Captured: ", len(video_true))
     # Build video from numpy array
-
-    out = cv2.VideoWriter('output_video.avi', cv2.VideoWriter_fourcc(*'DIVX'), 24, resolution)
-    out_true = cv2.VideoWriter('output_true.avi', cv2.VideoWriter_fourcc(*'DIVX'), 24, resolution)
+    now = datetime.now()
+    if isReplayAttack or isForgedAttack:
+        out = cv2.VideoWriter('outputs/output_video'+str(now)+'.avi', cv2.VideoWriter_fourcc(*'DIVX'), 24, resolution)
+    
+    out_true = cv2.VideoWriter('outputs/output_true'+str(now)+'.avi', cv2.VideoWriter_fourcc(*'DIVX'), 24, resolution)
     for i in range(c):
-         out.write(video_feed[i])
-         out_true.write(video_true[i])
-    out.release()
+        if isReplayAttack or isForgedAttack:
+            out.write(video_feed[i])
+        out_true.write(video_true[i])
+    if isReplayAttack or isForgedAttack:
+        out.release()
     out_true.release()
