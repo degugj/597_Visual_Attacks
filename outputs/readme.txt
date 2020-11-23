@@ -1,1 +1,1 @@
-Outputs directory. True suffix represents the actual capture of the camera.
+Outputs directory. True suffix represents unchanged Pi camera capture.
