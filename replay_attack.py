@@ -1,19 +1,20 @@
 import numpy
 
 stored_frames = []
+counter = 0
 
 """ replay_attack """
 def replay_attack(numFrames, frame):
 
-	# 1. store current frame
-	stored_frames.append(frame)
+	if len(stored_frames) != numFrames:
+		# store current frame
+		stored_frames.append(frame)
+		return frame
 
-	# 2. run stored frames in a while loop
-	if len(stored_frames) == numFrames:
-		# return old frame
-		return_frame = stored_frames[0]
-		stored_frames.pop(0)
+	else:
+		return_frame = stored_frames[counter]
+		if counter == numFrames:
+			counter = 0
+		counter += 1
 		return return_frame
-
-	return frame
 
