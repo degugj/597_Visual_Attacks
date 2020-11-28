@@ -16,7 +16,7 @@ def replay_attack(numFrames, frame):
         if replayIt == numFrames:
             replayIt = 0
         return return_frame
-
+'''
 def selective_replay_attack(numFrames, frame):
         if len(stored_frames) != numFrames:
             # store current frame
@@ -34,3 +34,4 @@ def selective_replay_attack(numFrames, frame):
             
             return return_frame
 
+'''

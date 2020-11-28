@@ -6,14 +6,17 @@ import cv2
 from datetime import datetime
 import replay_attack
 
+
 isReplayAttack = False
 isSelectiveReplayAttack = False
 isForgedAttack = False
 isIFC_Verification = False
 isBlinkVerification = False
-if len(sys.argv)>0:
-    if sys.argv[0] == "replay":
+
+if len(sys.argv)>1:
+    if sys.argv[1] == "replay":
         isReplayAttack = True
+
 with picamera.PiCamera() as camera:
     resolution = (320, 240)
     camera.resolution = resolution
@@ -21,17 +24,19 @@ with picamera.PiCamera() as camera:
     video_feed = []
     video_true = []
     c = 0
+    
     for c in range(1000):
-        output = np.empty((240, 320, 3), dtype=np.uint8)  # 3D matrix of rgb values
-        camera.capture(output, 'rgb', True)  # Find argument to make capture faster (at framerate)
+        #output = np.empty((240, 320, 3), dtype=np.uint8)  # 3D matrix of rgb values
+        output = picamera.array.PiRGBArray(camera)
+        camera.capture(output, 'bgr')  # Find argument to make capture faster (at framerate)
         video_true.append(output)
-        c+=1
         # Here is where we'd modify and inject the frame
         if isReplayAttack:
             output = replay_attack.replay_attack(100, output)
             video_feed.append(output)
-        print(c)
-    print("Number of Frames Captured: ", len(video_true))
+        c+=1
+    
+    
     # Build video from numpy array
     now = datetime.now()
     if isReplayAttack or isForgedAttack:
