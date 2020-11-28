@@ -4,9 +4,14 @@ import picamera
 import numpy as np
 import cv2
 from datetime import datetime
+import threading
 
 import replay_attack
 import verification
+
+def input_thread():
+    numBlinks = input("Enter number of blinks for display: ")
+    verification.blink_verification(numBlinks)
 
 isReplayAttack = False
 isSelectiveReplayAttack = False
@@ -26,7 +31,7 @@ with picamera.PiCamera() as camera:
     video_true = []
     c = 0
     prevFrame = None
-    
+    verification.blink_verification(5)
     for c in range(1000):
         output = np.empty((240, 320, 3), dtype=np.uint8)  # 3D matrix of rgb values
         
