@@ -4,8 +4,9 @@ import picamera
 import numpy as np
 import cv2
 from datetime import datetime
-import replay_attack
 
+import replay_attack
+import verification
 
 isReplayAttack = False
 isSelectiveReplayAttack = False
@@ -24,23 +25,34 @@ with picamera.PiCamera() as camera:
     video_feed = []
     video_true = []
     c = 0
+    prevFrame = None
     
     for c in range(1000):
-        #output = np.empty((240, 320, 3), dtype=np.uint8)  # 3D matrix of rgb values
-        output = picamera.array.PiRGBArray(camera)
-        camera.capture(output, 'bgr')  # Find argument to make capture faster (at framerate)
+        output = np.empty((240, 320, 3), dtype=np.uint8)  # 3D matrix of rgb values
+        
+        camera.capture(output, 'rgb', True)  # Find argument to make capture faster (at framerate)
         video_true.append(output)
+        
+        """if prevFrame != None:
+            correlation = verification.interframe_correlation(prevFrame, output)
+            print("correlation: ", correlation)
+        prevFrame = output
+        """
+        
         # Here is where we'd modify and inject the frame
         if isReplayAttack:
             output = replay_attack.replay_attack(100, output)
             video_feed.append(output)
+        
         c+=1
+        
     
     
+    print(video_true[0])
     # Build video from numpy array
     now = datetime.now()
     if isReplayAttack or isForgedAttack:
-        out = cv2.VideoWriter('outputs/output_video'+str(now)+'.avi', cv2.VideoWriter_fourcc(*'DIVX'), 24, resolution)
+        out = cv2.VideoWriter('outputs/output_spoof'+str(now)+'.avi', cv2.VideoWriter_fourcc(*'DIVX'), 24, resolution)
     
     out_true = cv2.VideoWriter('outputs/output_true'+str(now)+'.avi', cv2.VideoWriter_fourcc(*'DIVX'), 24, resolution)
     for i in range(c):
