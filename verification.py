@@ -14,16 +14,15 @@ def blink_verification(numBlinks):
 	# Raspberry Pi pin configuration:
 	RST = 24
 	# 128x32 display with hardware I2C:
+	
 	disp = Adafruit_SSD1306.SSD1306_128_32(rst=RST)
 	disp.begin()
-	for i in range(numBlinks):
-
+	for i in range(int(numBlinks)):
 		# Create blank image for drawing.
 		# Make sure to create image with mode '1' for 1-bit color.
 		width = disp.width
 		height = disp.height
 		image = Image.new('1', (width, height))
-
 		# Get drawing object to draw on image.
 		draw = ImageDraw.Draw(image)
 
@@ -50,6 +49,7 @@ def blink_verification(numBlinks):
 		disp.clear()
 		disp.display()
 		time.sleep(.5)
+		
 	return 0
 
 def interframe_correlation(prevFrame, currFrame):

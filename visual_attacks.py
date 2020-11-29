@@ -8,21 +8,30 @@ import threading
 
 import replay_attack
 import verification
-
+terminated = False
 def input_thread():
-    numBlinks = input("Enter number of blinks for display: ")
-    verification.blink_verification(numBlinks)
-
+    while not terminated:
+            numBlinks = input("Enter number of blinks for display: ")
+            if numBlinks == '':
+                return
+            verification.blink_verification(numBlinks)
 isReplayAttack = False
+isBlinkDemo = False
 isSelectiveReplayAttack = False
+isBlinkAttack = False
 isForgedAttack = False
 isIFC_Verification = False
 isBlinkVerification = False
-
+thread = None;
 if len(sys.argv)>1:
     if sys.argv[1] == "replay":
         isReplayAttack = True
-
+    if sys.argv[1] == "blinkDemo":
+        isBlinkDemo = True
+if isBlinkDemo or isSelectiveReplayAttack or isBlinkAttack:
+    thread = threading.Thread(target=input_thread, args=())
+    thread.daemon = True
+    thread.start()
 with picamera.PiCamera() as camera:
     resolution = (320, 240)
     camera.resolution = resolution
@@ -31,7 +40,6 @@ with picamera.PiCamera() as camera:
     video_true = []
     c = 0
     prevFrame = None
-    verification.blink_verification(5)
     for c in range(1000):
         output = np.empty((240, 320, 3), dtype=np.uint8)  # 3D matrix of rgb values
         
@@ -50,10 +58,10 @@ with picamera.PiCamera() as camera:
             video_feed.append(output)
         
         c+=1
-        
-    
-    
-    print(video_true[0])
+    if isBlinkDemo or isSelectiveReplayAttack or isBlinkAttack:
+        terminate = True
+        print("\nPress Enter to Exit")
+        thread.join()
     # Build video from numpy array
     now = datetime.now()
     if isReplayAttack or isForgedAttack:
