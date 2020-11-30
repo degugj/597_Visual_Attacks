@@ -17,7 +17,7 @@ def input_thread():
                 return
             verification.blink_verification(numBlinks)
 isReplayAttack = False
-isSelectiveReplayAttack = True
+isSelectiveReplayAttack = False
 isForgedAttack = False
 isIFC_Verification = False
 isBlinkVerification = True
@@ -34,7 +34,7 @@ if isBlinkVerification:
 with picamera.PiCamera() as camera:
     resolution = (320, 240)
     camera.resolution = resolution
-    camera.framerate = 12
+    camera.framerate = 24
     video_feed = []
     video_true = []
     c = 0
@@ -52,14 +52,14 @@ with picamera.PiCamera() as camera:
         
         # Here is where we'd modify and inject the frame
         if isReplayAttack:
-            if c == 100:
+            if c == 200:
                 print("Replay attack started")
-            output = replay_attack.replay_attack(100, output)
+            output = replay_attack.replay_attack(75, 125, output)
             video_feed.append(output)
         if isSelectiveReplayAttack:
-            if c == 100:
-                print("Selective replay attack started")
-            output = replay_attack.selective_replay_attack(100, output)
+            if c == 200:
+                print("\nSelective replay attack started")
+            output = replay_attack.selective_replay_attack(75,125, output)
             video_feed.append(output)
         
         c+=1
@@ -70,9 +70,9 @@ with picamera.PiCamera() as camera:
     # Build video from numpy array
     now = datetime.now()
     if isReplayAttack or isForgedAttack or isSelectiveReplayAttack:
-        out = cv2.VideoWriter('outputs/output_spoof'+str(now)+'.avi', cv2.VideoWriter_fourcc(*'DIVX'), 12, resolution)
+        out = cv2.VideoWriter('outputs/output_spoof'+str(now)+'.avi', cv2.VideoWriter_fourcc(*'DIVX'), 24, resolution)
     
-    out_true = cv2.VideoWriter('outputs/output_true'+str(now)+'.avi', cv2.VideoWriter_fourcc(*'DIVX'), 12, resolution)
+    out_true = cv2.VideoWriter('outputs/output_true'+str(now)+'.avi', cv2.VideoWriter_fourcc(*'DIVX'), 24, resolution)
     for i in range(c):
         if isReplayAttack or isForgedAttack or isSelectiveReplayAttack:
             out.write(video_feed[i])
