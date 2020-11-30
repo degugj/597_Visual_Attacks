@@ -17,7 +17,7 @@ def input_thread():
                 return
             verification.blink_verification(numBlinks)
 isReplayAttack = False
-isSelectiveReplayAttack = False
+isSelectiveReplayAttack = True
 isForgedAttack = False
 isIFC_Verification = False
 isBlinkVerification = True
