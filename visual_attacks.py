@@ -5,7 +5,7 @@ import numpy as np
 import cv2
 from datetime import datetime
 import threading
-
+import statistics
 import replay_attack
 import verification
 terminated = False
@@ -17,11 +17,12 @@ def input_thread():
                 return
             verification.blink_verification(numBlinks)
 isReplayAttack = False
-isSelectiveReplayAttack = False
+isSelectiveReplayAttack = True
 isForgedAttack = False
 isIFC_Verification = False
-isBlinkVerification = True
+isBlinkVerification = False
 thread = None;
+timeStats = []
 #if len(sys.argv)>1:
 #    if sys.argv[1] == "replay":
 #        isReplayAttack = True
@@ -54,15 +55,25 @@ with picamera.PiCamera() as camera:
         if isReplayAttack:
             if c == 200:
                 print("Replay attack started")
+            #t1 = time.perf_counter()
             output = replay_attack.replay_attack(75, 125, output)
+            #t2 = time.perf_counter()
+            #timeStats.append(t2-t1)
+            #print(t2-t1)
             video_feed.append(output)
         if isSelectiveReplayAttack:
             if c == 200:
                 print("\nSelective replay attack started")
+            #t3 = time.perf_counter()
             output = replay_attack.selective_replay_attack(75,125, output)
+            #t4 = time.perf_counter()
+            #timeStats.append(t4-t3)
+            #print(t4-t3)
             video_feed.append(output)
         
         c+=1
+    #print("Max: ",max(timeStats), "Min: ", min(timeStats), "Mean: ", statistics.mean(timeStats))
+    #sys.exit()
     if isBlinkVerification:
         terminate = True
         print("\nPress Enter to Exit")
