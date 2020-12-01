@@ -3,17 +3,17 @@ import numpy as np
 import statistics
 #put path to video below. might need to  reset datype based on video. check frame.dtype()
 
-maxlength = 500
-maxbreadth = 500
-boxPixel = [34,139,34]
+maxlength = 100
+maxbreadth = 100
+boxPixel = [50,50,50]
 framectr = 0
 correlationArray = []
 
 round0 = 1
 
-prev_frame = np.zeros((1080,1920,3), dtype = np.uint8)
+prev_frame = np.zeros((320,240,3), dtype = np.uint8)
 
-cap = cv2.VideoCapture('Backend-Demo.mp4') 
+cap = cv2.VideoCapture('RWBoutput_true2020-11-30 03 52 02.163626.avi') 
 
 
 while(cap.isOpened()):
@@ -42,10 +42,19 @@ while(cap.isOpened()):
 	# ctr+=1
 	if cv2.waitKey(1) & 0xFF == ord('q'):
 		break
+#to get rid of the first correlation value as it is meaningless
+correlationArray.pop(0)
+
+results = list(map(int, correlationArray))
+stdev = statistics.stdev(results)
+mean = statistics.mean(correlationArray)
 
 print("Minimum correlation = ", min(correlationArray))
 print("Maximum correlation = ", max(correlationArray))
-print("Correlation average = ", statistics.mean(correlationArray))
+print("Correlation average = ", mean)
+print("Standard Deviation = ", stdev)
+print("Approximate IFC value: = ", mean - stdev)
+
 
 cap.release()
 cv2.destroyAllWindows()
