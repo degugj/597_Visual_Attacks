@@ -7,8 +7,9 @@ prev_frame = np.zeros((240,320,3), dtype = np.uint8)
 round0 = 1
 
 #put path to video below. might need to  reset datype based on video. check frame.dtype()
+
 cap = cv2.VideoCapture('SR output_true2020-11-30 04 04 30.667585.avi') 
-# ctr = 0
+
 maximumFrame = 0
 sumArray = []
 correlationArray = []
@@ -23,6 +24,7 @@ while(cap.isOpened()):
 	array_b = np.ndarray.flatten(prev_frame)
 	corr = np.correlate(array_a, array_b)[0]
 	print("Correlation: ",corr)
+
 	diff = cv2.absdiff(frame, prev_frame)
 	sumPixelArray = cv2.sumElems(diff)
 	# print("Prev Frame:",prev_frame)
@@ -54,6 +56,7 @@ print("Maximum correlation = ", max(correlationArray))
 print("Correlation average = ", mean)
 print("Standard Deviation = ", stdev)
 print("Approximate IFC value: = ", mean - stdev)
+
 
 #put check condition based on the specific video that we will run for a certain amount of time
 
